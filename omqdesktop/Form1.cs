@@ -21,7 +21,7 @@ namespace omqdesktop
         int currentScore = 0;
         WaveOutEvent waveoutevent = new WaveOutEvent();
         int cbwidth = 383;
-        int cbheight = 28;
+        int cbheight = 28;        
         public Form1()
         {
             InitializeComponent();
@@ -29,7 +29,7 @@ namespace omqdesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            waveoutevent.Volume = 0.15F;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -196,7 +196,7 @@ namespace omqdesktop
 
         private void comboBox1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (comboBox1.Text.Length != 0 && !e.KeyCode.Equals(Keys.Up) && !e.KeyCode.Equals(Keys.Down))
+            if (comboBox1.Text.Length != 0 && !e.KeyCode.Equals(Keys.Up) && !e.KeyCode.Equals(Keys.Down) && comboBox1.Text != " ")
             {
                 int selectionStart = comboBox1.SelectionStart;
                 comboBox1.Items.Clear();
@@ -276,8 +276,15 @@ namespace omqdesktop
             btnPlay.Visible = false;
             lblGuess.Visible = true;
             comboBox1.Visible = false;
-            await (Task.Factory.StartNew(() => pictureBox1.Load(coverImgs[currentSong])));                        
-            await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong])));
+            await (Task.Factory.StartNew(() => pictureBox1.Load(coverImgs[currentSong])));
+            try
+            {
+                await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong])));
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("mp3 probably got nuked lmao");
+            }
            // Thread.Sleep(10000);
             comboBox1.Text = "";
             comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);            
