@@ -6,6 +6,7 @@ using System.Security.Policy;
 using System.Text.Json.Nodes;
 using NAudio;
 using NAudio.Wave;
+using System.Diagnostics.Contracts;
 
 namespace omqdesktop
 {
@@ -123,13 +124,13 @@ namespace omqdesktop
                         if (data != null)
                         {
                             var dataObj = JsonNode.Parse(data);
-                            coverImgs.Add(dataObj["beatmapset"]["covers"]["cover"].ToString());
+                            coverImgs.Add(dataObj["beatmapset"]["covers"]["list@2x"].ToString());
                             titleArtist.Add(dataObj["beatmapset"]["artist"].ToString() + " - " + dataObj["beatmapset"]["title"].ToString());
                             previewUrls.Add(dataObj["beatmapset"]["preview_url"].ToString());
                         }
                         else
                         {
-                            Console.WriteLine("NO Data----------");
+                            MessageBox.Show("There's no data?");
                         }
                     }
                 }
@@ -137,10 +138,11 @@ namespace omqdesktop
 
             panel1.Visible = false;
             updateLbls();
-            panel2.Visible = true;
+            panel2.Visible = true;           
             panel2.Top = 0;
             panel2.Left = 0;
             panel2.Dock = DockStyle.Fill;
+            //pictureBox1.Dock = DockStyle.Top;            
             comboBox1.DropDownHeight = 200;
             comboBox1.DroppedDown = true;
             comboBox1.DropDownStyle = ComboBoxStyle.Simple;
@@ -180,6 +182,11 @@ namespace omqdesktop
         private void startMp3Task()
         {
             Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong]));
+        }
+
+        private async void loadImg()
+        {
+             pictureBox1.Load(coverImgs[currentSong]);
         }
 
         private void btnPlay_Click_1(object sender, EventArgs e)
@@ -257,15 +264,45 @@ namespace omqdesktop
             
         }
 
-        private void goesToNextSong()
+        private async void goesToNextSong()
         {
-            pictureBox1.Load(coverImgs[currentSong]);
-            comboBox1.Text = "";
-            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
             waveoutevent.Stop();
+            pictureBox1.Visible = true;
+            pictureBox1.Dock = DockStyle.Fill;
+            lblScore.Visible = false;
+            lblCounter.Visible = false;
+            btnGuess.Visible = false;
+            btnSkip.Visible = false;
+            btnPlay.Visible = false;
+            lblGuess.Visible = true;
+            comboBox1.Visible = false;
+            await (Task.Factory.StartNew(() => pictureBox1.Load(coverImgs[currentSong])));                        
+            await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong])));
+           // Thread.Sleep(10000);
+            comboBox1.Text = "";
+            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);            
             currentSong++;
-            startMp3Task();
+            lblScore.Visible = true;
+            lblCounter.Visible = true;
+            btnGuess.Visible = true;
+            btnSkip.Visible = true;
+            btnPlay.Visible = true;
+            pictureBox1.Visible = false;
+            lblGuess.Visible = false;
+            comboBox1.Visible = true;
             updateLbls();
+            waveoutevent.Stop();
+            startMp3Task();           
+            
+        }
+
+        private void ShowsImgPlaysSong()
+        {
+            
+            panel2.Visible = false;                   
+            pictureBox1.Visible = true;
+            startMp3Task();
+            Thread.Sleep(10000);
         }
     }
     public static class ListExtension

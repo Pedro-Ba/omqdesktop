@@ -37,8 +37,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblGuess = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblScore = new System.Windows.Forms.Label();
             this.lblCounter = new System.Windows.Forms.Label();
             this.btnSkip = new System.Windows.Forms.Button();
@@ -122,8 +122,8 @@
             this.panel2.AutoSize = true;
             this.panel2.BackgroundImage = global::omqdesktop.Properties.Resources.bg;
             this.panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Controls.Add(this.lblGuess);
+            this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Controls.Add(this.lblScore);
             this.panel2.Controls.Add(this.lblCounter);
             this.panel2.Controls.Add(this.btnSkip);
@@ -136,25 +136,26 @@
             this.panel2.TabIndex = 4;
             this.panel2.Visible = false;
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(788, 151);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
-            // 
             // lblGuess
             // 
             this.lblGuess.AutoSize = true;
-            this.lblGuess.BackColor = System.Drawing.Color.Transparent;
+            this.lblGuess.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lblGuess.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblGuess.Location = new System.Drawing.Point(265, 154);
+            this.lblGuess.Location = new System.Drawing.Point(160, 44);
             this.lblGuess.Name = "lblGuess";
             this.lblGuess.Size = new System.Drawing.Size(0, 20);
-            this.lblGuess.TabIndex = 6;
+            this.lblGuess.TabIndex = 8;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(128, 18);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(503, 98);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
+            this.pictureBox1.WaitOnLoad = true;
             // 
             // lblScore
             // 
@@ -222,7 +223,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(782, 653);
+            this.ClientSize = new System.Drawing.Size(782, 753);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.panel1);
@@ -256,7 +257,7 @@
         private Button btnGuess;
         private Label lblScore;
         private Label lblCounter;
-        private Label lblGuess;
         private PictureBox pictureBox1;
+        private Label lblGuess;
     }
 }
