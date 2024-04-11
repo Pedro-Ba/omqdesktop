@@ -17,11 +17,12 @@ namespace omqdesktop
         List<string> titleArtist = new List<string>();
         List<string> previewUrls = new List<string>();
         List<string> coverImgs = new List<string>();
+        List<string> randomTitleArtist = new List<string>();
         int currentSong = 0;
         int currentScore = 0;
         WaveOutEvent waveoutevent = new WaveOutEvent();
         int cbwidth = 383;
-        int cbheight = 28;        
+        int cbheight = 28;
         public Form1()
         {
             InitializeComponent();
@@ -102,12 +103,12 @@ namespace omqdesktop
                     }
                     else
                     {
-                        Console.WriteLine("NO Data----------");
+                        //Console.WriteLine("NO Data----------");
                     }
                 }
             }
 
-            Console.WriteLine(beatmapIds.Count);
+            //Console.WriteLine(beatmapIds.Count);
             //Shuffle beatmaps
             beatmapIds.Shuffle();
 
@@ -126,6 +127,10 @@ namespace omqdesktop
                             var dataObj = JsonNode.Parse(data);
                             coverImgs.Add(dataObj["beatmapset"]["covers"]["list@2x"].ToString());
                             titleArtist.Add(dataObj["beatmapset"]["artist"].ToString() + " - " + dataObj["beatmapset"]["title"].ToString());
+                            randomTitleArtist.Add(dataObj["beatmapset"]["artist"].ToString() + " - " + dataObj["beatmapset"]["title"].ToString());
+                            //TODO: reshuffle titleArtist into a different array for true randomness in the dropdown list
+                            //TODO: Make it better (you can probably just copy the array without inserting it again by value and then shuffle new instead of inserting like this, this is kinda shitty ngl but who cares (I care that's why I put this here but I don't care enough to make this better right now)
+                            randomTitleArtist.Shuffle();
                             previewUrls.Add(dataObj["beatmapset"]["preview_url"].ToString());
                         }
                         else
@@ -138,7 +143,7 @@ namespace omqdesktop
 
             panel1.Visible = false;
             updateLbls();
-            panel2.Visible = true;           
+            panel2.Visible = true;
             panel2.Top = 0;
             panel2.Left = 0;
             panel2.Dock = DockStyle.Fill;
@@ -169,7 +174,7 @@ namespace omqdesktop
                     new BlockAlignReductionStream(
                         WaveFormatConversionStream.CreatePcmStream(
                             new Mp3FileReader(ms))))
-                {                    
+                {
                     waveoutevent.Init(blockAlignedStream);
                     waveoutevent.Play();
                     while (waveoutevent.PlaybackState == PlaybackState.Playing)
@@ -186,7 +191,7 @@ namespace omqdesktop
 
         private async void loadImg()
         {
-             pictureBox1.Load(coverImgs[currentSong]);
+            pictureBox1.Load(coverImgs[currentSong]);
         }
 
         private void btnPlay_Click_1(object sender, EventArgs e)
@@ -196,13 +201,13 @@ namespace omqdesktop
 
         private void comboBox1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (comboBox1.Text.Length != 0 && !e.KeyCode.Equals(Keys.Up) && !e.KeyCode.Equals(Keys.Down) && comboBox1.Text != " ")
+            if (comboBox1.Text.Length != 0 && !e.KeyCode.Equals(Keys.Up) && !e.KeyCode.Equals(Keys.Down) && comboBox1.Text != " " && comboBox1.Text != "-" && comboBox1.Text != " -")
             {
                 int selectionStart = comboBox1.SelectionStart;
                 comboBox1.Items.Clear();
-                for (var i = 0; i < titleArtist.Count - 1; i++)
+                for (var i = 0; i < randomTitleArtist.Count; i++)
                 {
-                    var artist = titleArtist[i];
+                    var artist = randomTitleArtist[i];
                     if (artist.ToLower().Contains(comboBox1.Text.ToLower()))
                     {
                         comboBox1.Items.Add(artist);
@@ -211,7 +216,7 @@ namespace omqdesktop
                 comboBox1.SelectionStart = selectionStart;
                 comboBox1.SelectionLength = 0;
                 comboBox1.SelectedIndex = -1;
-                comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight*10);
+                comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight * 10);
             }
             else
             {
@@ -233,7 +238,7 @@ namespace omqdesktop
 
         private void updateLbls()
         {
-            lblCounter.Text = "Current Song: " + (currentSong+1).ToString() + "/" + (titleArtist.Count+1).ToString();
+            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (titleArtist.Count + 1).ToString();
             lblScore.Text = "Score: " + (currentScore).ToString() + "/" + currentSong.ToString();
             //lblScore;
 
@@ -261,12 +266,13 @@ namespace omqdesktop
                 lblGuess.ForeColor = Color.Red;
                 goesToNextSong();
             }
-            
+
         }
 
         private async void goesToNextSong()
         {
             waveoutevent.Stop();
+            await (Task.Factory.StartNew(() => pictureBox1.Load(coverImgs[currentSong])));
             pictureBox1.Visible = true;
             pictureBox1.Dock = DockStyle.Fill;
             lblScore.Visible = false;
@@ -276,18 +282,16 @@ namespace omqdesktop
             btnPlay.Visible = false;
             lblGuess.Visible = true;
             comboBox1.Visible = false;
-            await (Task.Factory.StartNew(() => pictureBox1.Load(coverImgs[currentSong])));
             try
             {
                 await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong])));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show("mp3 probably got nuked lmao");
             }
-           // Thread.Sleep(10000);
             comboBox1.Text = "";
-            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);            
+            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
             currentSong++;
             lblScore.Visible = true;
             lblCounter.Visible = true;
@@ -299,18 +303,10 @@ namespace omqdesktop
             comboBox1.Visible = true;
             updateLbls();
             waveoutevent.Stop();
-            startMp3Task();           
-            
+            startMp3Task();
+
         }
 
-        private void ShowsImgPlaysSong()
-        {
-            
-            panel2.Visible = false;                   
-            pictureBox1.Visible = true;
-            startMp3Task();
-            Thread.Sleep(10000);
-        }
     }
     public static class ListExtension
     {
