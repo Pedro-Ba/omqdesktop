@@ -114,7 +114,7 @@ namespace omqdesktop
 
             string urlBeatmap = "https://osu.ppy.sh/api/v2/beatmaps/lookup/";
 
-            for (var i = 0; i < beatmapIds.Count - 1; i++)
+            for (var i = 0; i < beatmapIds.Count; i++)
             {
                 progressBar1.Value++;
                 using (HttpResponseMessage res = await client.GetAsync(urlBeatmap + "?id=" + beatmapIds[i]))
@@ -238,7 +238,7 @@ namespace omqdesktop
 
         private void updateLbls()
         {
-            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (titleArtist.Count + 1).ToString();
+            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (titleArtist.Count).ToString();
             lblScore.Text = "Score: " + (currentScore).ToString() + "/" + currentSong.ToString();
             //lblScore;
 
