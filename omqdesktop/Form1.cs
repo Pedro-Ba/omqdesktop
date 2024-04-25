@@ -14,9 +14,7 @@ namespace omqdesktop
     {
         string api_key;
         HttpClient client = new HttpClient();
-        List<string> titleArtist = new List<string>();
-        List<string> previewUrls = new List<string>();
-        List<string> coverImgs = new List<string>();
+        List<Song> songList = new List<Song>();
         List<string> randomTitleArtist = new List<string>();
         int currentSong = 0;
         int currentScore = 0;
@@ -78,6 +76,9 @@ namespace omqdesktop
             progressBar1.Value = 0;
             string user_id = textBox1.Text + "/";
             string type = "best/";
+            string ArtistTitle;
+            string urlPreview;
+            string urlImage;
 
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + api_key);
 
@@ -97,7 +98,12 @@ namespace omqdesktop
                         {
                             foreach (var i in jArray)
                             {
-                                beatmapIds.Add(i["beatmap"]["id"].ToString());
+                                ArtistTitle = i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString();
+                                randomTitleArtist.Add(i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString());
+                                urlPreview = i["beatmapset"]["preview_url"].ToString();
+                                urlImage = i["beatmapset"]["covers"]["list@2x"].ToString();
+                                songList.Add(new Song(ArtistTitle, urlPreview, urlImage));
+                                progressBar1.Value++;
                             }
                         }
                     }
@@ -107,39 +113,9 @@ namespace omqdesktop
                     }
                 }
             }
-
-            //Console.WriteLine(beatmapIds.Count);
-            //Shuffle beatmaps
-            beatmapIds.Shuffle();
-
-            string urlBeatmap = "https://osu.ppy.sh/api/v2/beatmaps/lookup/";
-
-            for (var i = 0; i < beatmapIds.Count; i++)
-            {
-                progressBar1.Value++;
-                using (HttpResponseMessage res = await client.GetAsync(urlBeatmap + "?id=" + beatmapIds[i]))
-                {
-                    using (HttpContent content = res.Content)
-                    {
-                        var data = await content.ReadAsStringAsync();
-                        if (data != null)
-                        {
-                            var dataObj = JsonNode.Parse(data);
-                            coverImgs.Add(dataObj["beatmapset"]["covers"]["list@2x"].ToString());
-                            titleArtist.Add(dataObj["beatmapset"]["artist"].ToString() + " - " + dataObj["beatmapset"]["title"].ToString());
-                            randomTitleArtist.Add(dataObj["beatmapset"]["artist"].ToString() + " - " + dataObj["beatmapset"]["title"].ToString());
-                            //TODO: reshuffle titleArtist into a different array for true randomness in the dropdown list
-                            //TODO: Make it better (you can probably just copy the array without inserting it again by value and then shuffle new instead of inserting like this, this is kinda shitty ngl but who cares (I care that's why I put this here but I don't care enough to make this better right now)
-                            randomTitleArtist.Shuffle();
-                            previewUrls.Add(dataObj["beatmapset"]["preview_url"].ToString());
-                        }
-                        else
-                        {
-                            MessageBox.Show("There's no data?");
-                        }
-                    }
-                }
-            }
+            //shuffle
+            randomTitleArtist.Shuffle();
+            songList.Shuffle();
 
             panel1.Visible = false;
             updateLbls();
@@ -186,12 +162,12 @@ namespace omqdesktop
 
         private void startMp3Task()
         {
-            Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong]));
+            Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + songList[currentSong].previewUrl));
         }
 
         private async void loadImg()
         {
-            pictureBox1.Load(coverImgs[currentSong]);
+            pictureBox1.Load(songList[currentSong].coverImg);
         }
 
         private void btnPlay_Click_1(object sender, EventArgs e)
@@ -238,14 +214,14 @@ namespace omqdesktop
 
         private void updateLbls()
         {
-            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (titleArtist.Count).ToString();
+            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (songList.Count).ToString();
             lblScore.Text = "Score: " + (currentScore).ToString() + "/" + currentSong.ToString();
             //lblScore;
 
         }
         private void btnSkip_Click(object sender, EventArgs e)
         {
-            lblGuess.Text = "You skipped!\nThe beatmap was " + titleArtist[currentSong].ToString();
+            lblGuess.Text = "You skipped!\nThe beatmap was " + songList[currentSong].titleArtist;
             lblGuess.ForeColor = Color.Red;
             goesToNextSong();
         }
@@ -253,16 +229,16 @@ namespace omqdesktop
         private void btnGuess_Click(object sender, EventArgs e)
         {
             string guess = comboBox1.Text;
-            if (guess.ToLower().Equals(titleArtist[currentSong].ToLower()))
+            if (guess.ToLower().Equals(songList[currentSong].titleArtist.ToLower()))
             {
-                lblGuess.Text = "You got it right!\nThe beatmap was " + titleArtist[currentSong].ToString();
+                lblGuess.Text = "You got it right!\nThe beatmap was " + songList[currentSong].titleArtist;
                 lblGuess.ForeColor = Color.Green;
                 currentScore++;
                 goesToNextSong();
             }
             else
             {
-                lblGuess.Text = "You got it wrong!\nThe beatmap was " + titleArtist[currentSong].ToString();
+                lblGuess.Text = "You got it wrong!\nThe beatmap was " + songList[currentSong].titleArtist;
                 lblGuess.ForeColor = Color.Red;
                 goesToNextSong();
             }
@@ -272,7 +248,7 @@ namespace omqdesktop
         private async void goesToNextSong()
         {
             waveoutevent.Stop();
-            await (Task.Factory.StartNew(() => pictureBox1.Load(coverImgs[currentSong])));
+            await (Task.Factory.StartNew(() => pictureBox1.Load(songList[currentSong].coverImg)));
             pictureBox1.Visible = true;
             pictureBox1.Dock = DockStyle.Fill;
             lblScore.Visible = false;
@@ -284,7 +260,7 @@ namespace omqdesktop
             comboBox1.Visible = false;
             try
             {
-                await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + previewUrls[currentSong])));
+                await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + songList[currentSong].previewUrl)));
             }
             catch (Exception e)
             {
@@ -325,5 +301,17 @@ namespace omqdesktop
             }
         }
     }
+    public class Song
+    {
+        public string titleArtist;
+        public string previewUrl;
+        public string coverImg;
 
+        public Song(string title, string url, string cover)
+        {
+            this.titleArtist = title;
+            this.previewUrl = url;
+            this.coverImg = cover;
+        }
+    }
 }
