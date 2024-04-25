@@ -69,7 +69,7 @@ namespace omqdesktop
             panel1.Left = 12;
             panel1.Top = 12;
             panel1.Visible = true;
-            label2.Text = "This will now get all top beatmaps from the player ID's default game mode, randomize them, and then do a \nlookup to retrieve both an .mp3 preview and the title + artist of every single one of them. \nThis takes a while, so please be patient.";
+            label2.Text = "This will get the top 100 maps in pp and in plays from the user ID's default gamemode.\nThis can potentially take some time.";
 
         }
 
@@ -248,8 +248,6 @@ namespace omqdesktop
         {
             lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (gameSongList.Count).ToString();
             lblScore.Text = "Score: " + (currentScore).ToString() + "/" + currentSong.ToString();
-            //lblScore;
-
         }
         private void btnSkip_Click(object sender, EventArgs e)
         {
@@ -319,7 +317,6 @@ namespace omqdesktop
             updateLbls();
             waveoutevent.Stop();
             startMp3Task();
-
         }
 
         private void btnTopPlay_Click(object sender, EventArgs e)
@@ -327,17 +324,7 @@ namespace omqdesktop
             //Since it's top play, then:
             gameSongList = topSongList;
             gameRandomTitleArtistList = topSongRandomTitleArtist;
-            panelMainMenu.Visible = false;
-            updateLbls();
-            panel2.Visible = true;
-            panel2.Top = 0;
-            panel2.Left = 0;
-            panel2.Dock = DockStyle.Fill;
-            //pictureBox1.Dock = DockStyle.Top;            
-            comboBox1.DropDownHeight = 200;
-            comboBox1.DroppedDown = true;
-            comboBox1.DropDownStyle = ComboBoxStyle.Simple;
-            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+            transitionToGameState();
         }
 
         private void btnMostPlayed_Click(object sender, EventArgs e)
@@ -345,6 +332,11 @@ namespace omqdesktop
             //since it's most played, then:
             gameSongList = mostPlayedSongList.GetRange(0, mostPlayedSongList.Count);
             gameRandomTitleArtistList = mostPlayedRandomTitleArtist.GetRange(0, mostPlayedSongList.Count);
+            transitionToGameState();
+        }
+
+        public void transitionToGameState()
+        {
             panelMainMenu.Visible = false;
             updateLbls();
             panel2.Visible = true;
