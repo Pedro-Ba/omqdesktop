@@ -14,8 +14,12 @@ namespace omqdesktop
     {
         string api_key;
         HttpClient client = new HttpClient();
-        List<Song> songList = new List<Song>();
-        List<string> randomTitleArtist = new List<string>();
+        List<Song> topSongList = new List<Song>();
+        List<string> topSongRandomTitleArtist = new List<string>();
+        List<Song> mostPlayedSongList = new List<Song>();
+        List<string> mostPlayedRandomTitleArtist = new List<string>();
+        List<Song> gameSongList = new List<Song>();
+        List<string> gameRandomTitleArtistList = new List<string>();
         int currentSong = 0;
         int currentScore = 0;
         WaveOutEvent waveoutevent = new WaveOutEvent();
@@ -71,7 +75,7 @@ namespace omqdesktop
 
         private async void btnGetTops_Click(object sender, EventArgs e)
         {
-            progressBar1.Maximum = 100;
+            progressBar1.Maximum = 200;
             progressBar1.Step = 1;
             progressBar1.Value = 0;
             string user_id = textBox1.Text + "/";
@@ -82,11 +86,9 @@ namespace omqdesktop
 
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + api_key);
 
-            string urlUser = "https://osu.ppy.sh/api/v2/users/" + user_id + "scores/" + type + "?limit=100";
+            string urlTopSongs = "https://osu.ppy.sh/api/v2/users/" + user_id + "scores/" + type + "?limit=100";
 
-            List<string> beatmapIds = new List<string>();
-
-            using (HttpResponseMessage res = await client.GetAsync(urlUser))
+            using (HttpResponseMessage res = await client.GetAsync(urlTopSongs))
             {
                 using (HttpContent content = res.Content)
                 {
@@ -99,10 +101,39 @@ namespace omqdesktop
                             foreach (var i in jArray)
                             {
                                 ArtistTitle = i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString();
-                                randomTitleArtist.Add(i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString());
+                                topSongRandomTitleArtist.Add(i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString());
                                 urlPreview = i["beatmapset"]["preview_url"].ToString();
                                 urlImage = i["beatmapset"]["covers"]["list@2x"].ToString();
-                                songList.Add(new Song(ArtistTitle, urlPreview, urlImage));
+                                topSongList.Add(new Song(ArtistTitle, urlPreview, urlImage));
+                                progressBar1.Value++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Console.WriteLine("NO Data----------");
+                    }
+                }
+            }
+
+            string urlMostPlayed = "https://osu.ppy.sh/api/v2/users/" + user_id + "beatmapsets/most_played/?limit=100";
+            using (HttpResponseMessage res = await client.GetAsync(urlMostPlayed))
+            {
+                using (HttpContent content = res.Content)
+                {
+                    var data = await content.ReadAsStringAsync();
+                    if (data != null)
+                    {
+                        var dataObj = JsonNode.Parse(data);
+                        if (dataObj is JsonArray jArray)
+                        {
+                            foreach (var i in jArray)
+                            {
+                                ArtistTitle = i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString();
+                                mostPlayedRandomTitleArtist.Add(i["beatmapset"]["artist"].ToString() + " - " + i["beatmapset"]["title"].ToString());
+                                urlPreview = i["beatmapset"]["preview_url"].ToString();
+                                urlImage = i["beatmapset"]["covers"]["list@2x"].ToString();
+                                mostPlayedSongList.Add(new Song(ArtistTitle, urlPreview, urlImage));
                                 progressBar1.Value++;
                             }
                         }
@@ -114,37 +145,38 @@ namespace omqdesktop
                 }
             }
             //shuffle
-            randomTitleArtist.Shuffle();
-            songList.Shuffle();
+            topSongRandomTitleArtist.Shuffle();
+            topSongList.Shuffle();
+            mostPlayedRandomTitleArtist.Shuffle();
+            mostPlayedSongList.Shuffle();
 
             panel1.Visible = false;
-            updateLbls();
-            panel2.Visible = true;
-            panel2.Top = 0;
-            panel2.Left = 0;
-            panel2.Dock = DockStyle.Fill;
-            //pictureBox1.Dock = DockStyle.Top;            
-            comboBox1.DropDownHeight = 200;
-            comboBox1.DroppedDown = true;
-            comboBox1.DropDownStyle = ComboBoxStyle.Simple;
-            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+            panelMainMenu.Visible = true;
+            panelMainMenu.Top = 0;
+            panelMainMenu.Left = 0;
+            panelMainMenu.Dock = DockStyle.Fill;
         }
 
         public void PlayMp3FromUrl(string url)
         {
             using (Stream ms = new MemoryStream())
             {
-                using (Stream stream = WebRequest.Create(url)
-                    .GetResponse().GetResponseStream())
+                try
                 {
-                    byte[] buffer = new byte[32768];
-                    int read;
-                    while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    using (Stream stream = WebRequest.Create(url)
+                        .GetResponse().GetResponseStream())
                     {
-                        ms.Write(buffer, 0, read);
+                        byte[] buffer = new byte[32768];
+                        int read;
+                        while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            ms.Write(buffer, 0, read);
+                        }
                     }
+                }catch(Exception e)
+                {
+                    MessageBox.Show("mp3 probably got nuked lmao");
                 }
-
                 ms.Position = 0;
                 using (WaveStream blockAlignedStream =
                     new BlockAlignReductionStream(
@@ -162,12 +194,12 @@ namespace omqdesktop
 
         private void startMp3Task()
         {
-            Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + songList[currentSong].previewUrl));
+            Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + gameSongList[currentSong].previewUrl));
         }
 
         private async void loadImg()
         {
-            pictureBox1.Load(songList[currentSong].coverImg);
+            pictureBox1.Load(gameSongList[currentSong].coverImg);
         }
 
         private void btnPlay_Click_1(object sender, EventArgs e)
@@ -181,9 +213,9 @@ namespace omqdesktop
             {
                 int selectionStart = comboBox1.SelectionStart;
                 comboBox1.Items.Clear();
-                for (var i = 0; i < randomTitleArtist.Count; i++)
+                for (var i = 0; i < gameRandomTitleArtistList.Count; i++)
                 {
-                    var artist = randomTitleArtist[i];
+                    var artist = gameRandomTitleArtistList[i];
                     if (artist.ToLower().Contains(comboBox1.Text.ToLower()))
                     {
                         comboBox1.Items.Add(artist);
@@ -214,14 +246,14 @@ namespace omqdesktop
 
         private void updateLbls()
         {
-            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (songList.Count).ToString();
+            lblCounter.Text = "Current Song: " + (currentSong + 1).ToString() + "/" + (gameSongList.Count).ToString();
             lblScore.Text = "Score: " + (currentScore).ToString() + "/" + currentSong.ToString();
             //lblScore;
 
         }
         private void btnSkip_Click(object sender, EventArgs e)
         {
-            lblGuess.Text = "You skipped!\nThe beatmap was " + songList[currentSong].titleArtist;
+            lblGuess.Text = "You skipped!\nThe beatmap was " + gameSongList[currentSong].titleArtist;
             lblGuess.ForeColor = Color.Red;
             goesToNextSong();
         }
@@ -229,16 +261,16 @@ namespace omqdesktop
         private void btnGuess_Click(object sender, EventArgs e)
         {
             string guess = comboBox1.Text;
-            if (guess.ToLower().Equals(songList[currentSong].titleArtist.ToLower()))
+            if (guess.ToLower().Equals(gameSongList[currentSong].titleArtist.ToLower()))
             {
-                lblGuess.Text = "You got it right!\nThe beatmap was " + songList[currentSong].titleArtist;
+                lblGuess.Text = "You got it right!\nThe beatmap was " + gameSongList[currentSong].titleArtist;
                 lblGuess.ForeColor = Color.Green;
                 currentScore++;
                 goesToNextSong();
             }
             else
             {
-                lblGuess.Text = "You got it wrong!\nThe beatmap was " + songList[currentSong].titleArtist;
+                lblGuess.Text = "You got it wrong!\nThe beatmap was " + gameSongList[currentSong].titleArtist;
                 lblGuess.ForeColor = Color.Red;
                 goesToNextSong();
             }
@@ -248,7 +280,14 @@ namespace omqdesktop
         private async void goesToNextSong()
         {
             waveoutevent.Stop();
-            await (Task.Factory.StartNew(() => pictureBox1.Load(songList[currentSong].coverImg)));
+            try
+            {
+                await (Task.Factory.StartNew(() => pictureBox1.Load(gameSongList[currentSong].coverImg)));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("You somehow have a map so old, it doesn't even have a background image. Congrats.");
+            }
             pictureBox1.Visible = true;
             pictureBox1.Dock = DockStyle.Fill;
             lblScore.Visible = false;
@@ -260,7 +299,7 @@ namespace omqdesktop
             comboBox1.Visible = false;
             try
             {
-                await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + songList[currentSong].previewUrl)));
+                await (Task.Factory.StartNew(() => PlayMp3FromUrl("https:" + gameSongList[currentSong].previewUrl)));
             }
             catch (Exception e)
             {
@@ -283,6 +322,41 @@ namespace omqdesktop
 
         }
 
+        private void btnTopPlay_Click(object sender, EventArgs e)
+        {
+            //Since it's top play, then:
+            gameSongList = topSongList;
+            gameRandomTitleArtistList = topSongRandomTitleArtist;
+            panelMainMenu.Visible = false;
+            updateLbls();
+            panel2.Visible = true;
+            panel2.Top = 0;
+            panel2.Left = 0;
+            panel2.Dock = DockStyle.Fill;
+            //pictureBox1.Dock = DockStyle.Top;            
+            comboBox1.DropDownHeight = 200;
+            comboBox1.DroppedDown = true;
+            comboBox1.DropDownStyle = ComboBoxStyle.Simple;
+            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+        }
+
+        private void btnMostPlayed_Click(object sender, EventArgs e)
+        {            
+            //since it's most played, then:
+            gameSongList = mostPlayedSongList.GetRange(0, mostPlayedSongList.Count);
+            gameRandomTitleArtistList = mostPlayedRandomTitleArtist.GetRange(0, mostPlayedSongList.Count);
+            panelMainMenu.Visible = false;
+            updateLbls();
+            panel2.Visible = true;
+            panel2.Top = 0;
+            panel2.Left = 0;
+            panel2.Dock = DockStyle.Fill;
+            //pictureBox1.Dock = DockStyle.Top;            
+            comboBox1.DropDownHeight = 200;
+            comboBox1.DroppedDown = true;
+            comboBox1.DropDownStyle = ComboBoxStyle.Simple;
+            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+        }
     }
     public static class ListExtension
     {
