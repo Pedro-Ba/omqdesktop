@@ -146,9 +146,7 @@ namespace omqdesktop
             }
             //shuffle
             topSongRandomTitleArtist.Shuffle();
-            topSongList.Shuffle();
             mostPlayedRandomTitleArtist.Shuffle();
-            mostPlayedSongList.Shuffle();
 
             panel1.Visible = false;
             panelMainMenu.Visible = true;
