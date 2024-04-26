@@ -47,14 +47,17 @@
             btnPlay = new Button();
             bindingSource1 = new BindingSource(components);
             panelMainMenu = new Panel();
+            numericUpDown1 = new NumericUpDown();
             label3 = new Label();
             btnMostPlayed = new Button();
             btnTopPlay = new Button();
+            label4 = new Label();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             panelMainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             SuspendLayout();
             // 
             // btnStart
@@ -229,6 +232,8 @@
             panelMainMenu.AutoSize = true;
             panelMainMenu.BackgroundImage = Properties.Resources.bg;
             panelMainMenu.BackgroundImageLayout = ImageLayout.Stretch;
+            panelMainMenu.Controls.Add(label4);
+            panelMainMenu.Controls.Add(numericUpDown1);
             panelMainMenu.Controls.Add(label3);
             panelMainMenu.Controls.Add(btnMostPlayed);
             panelMainMenu.Controls.Add(btnTopPlay);
@@ -237,6 +242,15 @@
             panelMainMenu.Size = new Size(788, 457);
             panelMainMenu.TabIndex = 5;
             panelMainMenu.Visible = false;
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Location = new Point(328, 321);
+            numericUpDown1.Minimum = new decimal(new int[] { 5, 0, 0, 0 });
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.Size = new Size(150, 27);
+            numericUpDown1.TabIndex = 9;
+            numericUpDown1.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // label3
             // 
@@ -268,6 +282,17 @@
             btnTopPlay.UseVisualStyleBackColor = true;
             btnTopPlay.Click += btnTopPlay_Click;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.BackColor = Color.Transparent;
+            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label4.Location = new Point(251, 283);
+            label4.Name = "label4";
+            label4.Size = new Size(295, 20);
+            label4.TabIndex = 10;
+            label4.Text = "Please choose how many songs to guess:";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -289,6 +314,7 @@
             ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
             panelMainMenu.ResumeLayout(false);
             panelMainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -315,5 +341,7 @@
         private Label label3;
         private Button btnMostPlayed;
         private Button btnTopPlay;
+        private NumericUpDown numericUpDown1;
+        private Label label4;
     }
 }
