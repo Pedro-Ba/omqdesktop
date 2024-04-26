@@ -322,7 +322,7 @@ namespace omqdesktop
         private void btnTopPlay_Click(object sender, EventArgs e)
         {
             //Since it's top play, then:
-            gameSongList = topSongList;
+            gameSongList = topSongList.GetRange(0, (int)(numericUpDown1.Value));
             gameRandomTitleArtistList = topSongRandomTitleArtist;
             transitionToGameState();
         }
@@ -330,8 +330,8 @@ namespace omqdesktop
         private void btnMostPlayed_Click(object sender, EventArgs e)
         {            
             //since it's most played, then:
-            gameSongList = mostPlayedSongList.GetRange(0, mostPlayedSongList.Count);
-            gameRandomTitleArtistList = mostPlayedRandomTitleArtist.GetRange(0, mostPlayedSongList.Count);
+            gameSongList = mostPlayedSongList.GetRange(0, (int)(numericUpDown1.Value));
+            gameRandomTitleArtistList = mostPlayedRandomTitleArtist;
             transitionToGameState();
         }
 
