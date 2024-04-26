@@ -303,33 +303,46 @@ namespace omqdesktop
             {
                 MessageBox.Show("mp3 probably got nuked lmao");
             }
-            comboBox1.Text = "";
-            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
             currentSong++;
-            lblScore.Visible = true;
-            lblCounter.Visible = true;
-            btnGuess.Visible = true;
-            btnSkip.Visible = true;
-            btnPlay.Visible = true;
-            pictureBox1.Visible = false;
-            lblGuess.Visible = false;
-            comboBox1.Visible = true;
-            updateLbls();
-            waveoutevent.Stop();
-            startMp3Task();
+            if (currentSong >= gameSongList.Count)
+            {
+                panel2.Visible = false;
+                panelMainMenu.Visible = true;
+                currentSong = 0;
+                currentScore = 0;
+            }
+            else
+            {
+                comboBox1.Text = "";
+                comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+                lblScore.Visible = true;
+                lblCounter.Visible = true;
+                btnGuess.Visible = true;
+                btnSkip.Visible = true;
+                btnPlay.Visible = true;
+                pictureBox1.Visible = false;
+                lblGuess.Visible = false;
+                comboBox1.Visible = true;
+                updateLbls();
+                waveoutevent.Stop();
+                startMp3Task();
+            }
+
         }
 
         private void btnTopPlay_Click(object sender, EventArgs e)
         {
             //Since it's top play, then:
+            topSongList.Shuffle();
             gameSongList = topSongList.GetRange(0, (int)(numericUpDown1.Value));
             gameRandomTitleArtistList = topSongRandomTitleArtist;
             transitionToGameState();
         }
 
         private void btnMostPlayed_Click(object sender, EventArgs e)
-        {            
+        {
             //since it's most played, then:
+            mostPlayedSongList.Shuffle();
             gameSongList = mostPlayedSongList.GetRange(0, (int)(numericUpDown1.Value));
             gameRandomTitleArtistList = mostPlayedRandomTitleArtist;
             transitionToGameState();
@@ -342,12 +355,24 @@ namespace omqdesktop
             panel2.Visible = true;
             panel2.Top = 0;
             panel2.Left = 0;
-            panel2.Dock = DockStyle.Fill;
-            //pictureBox1.Dock = DockStyle.Top;            
+            panel2.Dock = DockStyle.Fill; 
             comboBox1.DropDownHeight = 200;
             comboBox1.DroppedDown = true;
             comboBox1.DropDownStyle = ComboBoxStyle.Simple;
             comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+            comboBox1.Text = "";
+            comboBox1.Size = new System.Drawing.Size(cbwidth, cbheight);
+            lblScore.Visible = true;
+            lblCounter.Visible = true;
+            btnGuess.Visible = true;
+            btnSkip.Visible = true;
+            btnPlay.Visible = true;
+            pictureBox1.Visible = false;
+            lblGuess.Visible = false;
+            comboBox1.Visible = true;
+            updateLbls();
+            waveoutevent.Stop();
+            startMp3Task();
         }
     }
     public static class ListExtension
