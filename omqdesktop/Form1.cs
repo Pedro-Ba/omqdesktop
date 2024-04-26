@@ -32,7 +32,7 @@ namespace omqdesktop
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            waveoutevent.Volume = 0.15F;
+            waveoutevent.Volume = 0.1F;
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
@@ -171,7 +171,8 @@ namespace omqdesktop
                             ms.Write(buffer, 0, read);
                         }
                     }
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     MessageBox.Show("mp3 probably got nuked lmao");
                 }
@@ -302,12 +303,14 @@ namespace omqdesktop
                 MessageBox.Show("mp3 probably got nuked lmao");
             }
             currentSong++;
+            updateLbls();
             if (currentSong >= gameSongList.Count)
             {
-                panel2.Visible = false;
-                panelMainMenu.Visible = true;
-                currentSong = 0;
-                currentScore = 0;
+                pictureBox1.Visible = false;
+                lblGuess.Visible = false;
+                lblGameEnd.Visible = true;
+                lblScore.Visible = true;
+                btnMainMenu.Visible = true;
             }
             else
             {
@@ -321,7 +324,6 @@ namespace omqdesktop
                 pictureBox1.Visible = false;
                 lblGuess.Visible = false;
                 comboBox1.Visible = true;
-                updateLbls();
                 waveoutevent.Stop();
                 startMp3Task();
             }
@@ -353,7 +355,7 @@ namespace omqdesktop
             panel2.Visible = true;
             panel2.Top = 0;
             panel2.Left = 0;
-            panel2.Dock = DockStyle.Fill; 
+            panel2.Dock = DockStyle.Fill;
             comboBox1.DropDownHeight = 200;
             comboBox1.DroppedDown = true;
             comboBox1.DropDownStyle = ComboBoxStyle.Simple;
@@ -371,6 +373,16 @@ namespace omqdesktop
             updateLbls();
             waveoutevent.Stop();
             startMp3Task();
+        }
+
+        private void btnMainMenu_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
+            lblGameEnd.Visible = false;
+            btnMainMenu.Visible = false;
+            panelMainMenu.Visible = true;
+            currentSong = 0;
+            currentScore = 0;
         }
     }
     public static class ListExtension
