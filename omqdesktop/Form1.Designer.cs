@@ -37,6 +37,7 @@
             label1 = new Label();
             textBox1 = new TextBox();
             panel2 = new Panel();
+            lblGameEnd = new Label();
             lblGuess = new Label();
             pictureBox1 = new PictureBox();
             lblScore = new Label();
@@ -47,11 +48,12 @@
             btnPlay = new Button();
             bindingSource1 = new BindingSource(components);
             panelMainMenu = new Panel();
+            label4 = new Label();
             numericUpDown1 = new NumericUpDown();
             label3 = new Label();
             btnMostPlayed = new Button();
             btnTopPlay = new Button();
-            label4 = new Label();
+            btnMainMenu = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -130,6 +132,8 @@
             panel2.AutoSize = true;
             panel2.BackgroundImage = Properties.Resources.bg;
             panel2.BackgroundImageLayout = ImageLayout.Stretch;
+            panel2.Controls.Add(btnMainMenu);
+            panel2.Controls.Add(lblGameEnd);
             panel2.Controls.Add(lblGuess);
             panel2.Controls.Add(pictureBox1);
             panel2.Controls.Add(lblScore);
@@ -143,6 +147,18 @@
             panel2.Size = new Size(826, 882);
             panel2.TabIndex = 4;
             panel2.Visible = false;
+            // 
+            // lblGameEnd
+            // 
+            lblGameEnd.AutoSize = true;
+            lblGameEnd.BackColor = Color.Transparent;
+            lblGameEnd.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            lblGameEnd.Location = new Point(273, 205);
+            lblGameEnd.Name = "lblGameEnd";
+            lblGameEnd.Size = new Size(231, 20);
+            lblGameEnd.TabIndex = 9;
+            lblGameEnd.Text = "You've finished the song queue!";
+            lblGameEnd.Visible = false;
             // 
             // lblGuess
             // 
@@ -237,11 +253,22 @@
             panelMainMenu.Controls.Add(label3);
             panelMainMenu.Controls.Add(btnMostPlayed);
             panelMainMenu.Controls.Add(btnTopPlay);
-            panelMainMenu.Location = new Point(2, 207);
+            panelMainMenu.Location = new Point(12, 576);
             panelMainMenu.Name = "panelMainMenu";
             panelMainMenu.Size = new Size(788, 457);
             panelMainMenu.TabIndex = 5;
             panelMainMenu.Visible = false;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.BackColor = Color.Transparent;
+            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label4.Location = new Point(251, 283);
+            label4.Name = "label4";
+            label4.Size = new Size(295, 20);
+            label4.TabIndex = 10;
+            label4.Text = "Please choose how many songs to guess:";
             // 
             // numericUpDown1
             // 
@@ -282,16 +309,16 @@
             btnTopPlay.UseVisualStyleBackColor = true;
             btnTopPlay.Click += btnTopPlay_Click;
             // 
-            // label4
+            // btnMainMenu
             // 
-            label4.AutoSize = true;
-            label4.BackColor = Color.Transparent;
-            label4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label4.Location = new Point(251, 283);
-            label4.Name = "label4";
-            label4.Size = new Size(295, 20);
-            label4.TabIndex = 10;
-            label4.Text = "Please choose how many songs to guess:";
+            btnMainMenu.Location = new Point(341, 274);
+            btnMainMenu.Name = "btnMainMenu";
+            btnMainMenu.Size = new Size(94, 29);
+            btnMainMenu.TabIndex = 10;
+            btnMainMenu.Text = "Go back";
+            btnMainMenu.UseVisualStyleBackColor = true;
+            btnMainMenu.Visible = false;
+            btnMainMenu.Click += btnMainMenu_Click;
             // 
             // Form1
             // 
@@ -343,5 +370,7 @@
         private Button btnTopPlay;
         private NumericUpDown numericUpDown1;
         private Label label4;
+        private Label lblGameEnd;
+        private Button btnMainMenu;
     }
 }
