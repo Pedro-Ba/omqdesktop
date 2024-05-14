@@ -1,6 +1,6 @@
 # omqdesktop
 
-This was a short project done in two days mostly to mess with C# for the first time, and to try messing with an API. This uses the osu! API to retrieve the top 100 scores of an user (through their ID). Then, it keeps the links to the beatmap preview, the beatmap cover, and keeps the title and artist saved as strings in a list. 
+This was a short project done in two days mostly to mess with C# with an API and WinForms, given I had previously only used WinForms with Delphi. This uses the osu! API to retrieve the top 100 scores of an user (through their ID). Then, it keeps the links to the beatmap preview, the beatmap cover, and keeps the title and artist saved as strings in a list. 
 
 The song is played through NAudio as fire-and-forget (except for the transitions which are await'ed through a Task); the guess autocomplete is off the top 100 you have, so some maps may show up more than once (different mapsets or different difficulties) but choosing any of them is fine (Except for cases where one is TV size and the other is full, in which case, I hope the preview is kind to you!).
 
